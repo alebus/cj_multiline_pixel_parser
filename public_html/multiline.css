@@ -1,0 +1,144 @@
+
+/* 
+    Created on : May 4, 2015, 1:05:41 PM
+    Author     : alebus
+*/
+
+
+body {
+        //background-image: url("background-cj.gif");
+	//background-repeat: no-repeat;
+	//background-attachment: fixed;
+	//background-position: center; 
+	font-family: "Verdana", "Tahoma";
+        padding: 3em;
+}
+
+
+td {
+    padding: 5px;
+}
+
+
+.pixel:hover{
+	background-color:#ccddee;
+}
+
+a.selected {
+  background-color:#1F75CC;
+  color:white;
+  z-index:100;
+}
+
+
+.header {
+margin-top: 10px;
+font-size: 18px;
+font-weight:bold;
+}
+
+
+.warnings{
+color: red;
+background-color: #fdbebe;
+border: solid grey;
+padding: 5px;
+}
+
+.infoblue{
+color: black;
+background-color: #d7e4ff;
+border: solid grey;
+padding: 5px;
+}
+
+
+.a_textbox{
+color: black;
+background-color: #d6f4cf;
+border: solid grey;
+padding: 5px;
+font-family: "Verdana", "Tahoma";
+height: 2em;
+}
+
+.a_button{
+    
+color: black;
+font-family: "Verdana", "Tahoma";
+height: 2.5em;  
+margin-top: .5em;
+}
+
+
+.sample_pixel{
+background-color: #d6f4cf;
+ 
+  }
+
+  .broken_pixel{
+      background-color: #ffd7d7
+      
+  }
+  
+.messagepop {
+  background-color:#3366cc;
+  border:1px solid #000000;
+  cursor:default;
+  display:none;
+  margin-top: 15px;
+  position:fixed;
+  top:30%;
+  left:40%;
+  text-align:left;
+  width:400px;
+  z-index:50;
+  padding: 25px 10px 10px 10px;
+}
+
+.info{
+	 background-color:#ffffff;
+	 padding:5px;
+	 border:solid 1px #dddddd;
+	 font-family:"Consolas", monospace;
+	 font-size:12px;
+	 word-wrap: break-word;
+	 overflow:scroll; 
+	height:500px;
+	 
+}
+
+.params{
+	font-weight:bold;
+}
+
+.params_head{
+	font-weight:normal;
+	color:silver;
+}
+.op{
+	color:#777777;
+}
+label {
+  display: block;
+  margin-bottom: 3px;
+  padding-left: 15px;
+  text-indent: -15px;
+}
+
+.messagepop p, .messagepop.div {
+  border-bottom: 1px solid #EFEFEF;
+  margin: 8px 0;
+  padding-bottom: 8px;
+}
+
+.messagepop .close{
+	float:right;
+	margin-top:-25px;
+	margin-right:0px;
+	font-size: 18px;
+	text-decoration: none;
+}
+.messagepop .close:hover{
+	color:red;
+}
