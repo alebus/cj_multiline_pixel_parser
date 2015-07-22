@@ -20,25 +20,25 @@
 
 
 //pixel parser function
-	function parse_pixel(querystring){		
+	function parse_pixel(orig_querystring){		
 			
         //NOTE that the regex can't have quotes around it
-        querystring = querystring.replace(/&amp;/gi,'&');      
+        var querystring = orig_querystring.replace(/&amp;/gi,'&');      
         	
         var subTotal = 0;
         
         //if you set this to true, later will warn user about the subtotal
         var badSubtotal = false;
 	
-        //note if you change this: there is a test for this exact string later
-        var warnings = "<div class='warnings'>";
+        var warnings = "";
 
         //parse pixel
        
         var pixelArray = querystring.split("&");
         var pixelDict = new Array();
         
-        for(i = 0; i < pixelArray.length; i++){
+                
+        for(var i = 0; i < pixelArray.length; i++){
       
             
             //TODO valdiate that the pixel is correct before chopping it like this
@@ -53,7 +53,7 @@
             //you could at least verify that's correct, and then later check the QTY and AMT
             usingX = pixelArray[i].match(/(dcntx)|(amtx)|(itemx)|(qtyx)/gi);
             if(usingX != null){
-                    warnings += '<br/>Warning: found bad parameter: ' + usingX;
+                    warnings += ' Warning: found bad parameter: ' + usingX;
                 }
             
             var t = pixelArray[i].split("=");
@@ -76,13 +76,13 @@
                 
                 amountBadChars = pixelDict["AMOUNT"].match(/[^0-9\.]/g);
                 if(amountBadChars != null){
-                    warnings += '<br/>Warning: Illegal characters found in AMOUNT: ' + amountBadChars;
+                    warnings += ' Warning: Illegal characters found in AMOUNT: ' + amountBadChars;
                     badSubtotal = true;
                 }
                 
                 if( ! $.isNumeric(pixelDict["AMOUNT"])) {
                     
-                    warnings += '<br/>Warning: AMOUNT is not a numeric value: ' + pixelDict["AMOUNT"];
+                    warnings += ' Warning: AMOUNT is not a numeric value: ' + pixelDict["AMOUNT"];
                     badSubtotal = true;
                 }
                 
@@ -98,7 +98,7 @@
 				
             //show warning if coupon is missing
             if(pixelDict["COUPON"] == undefined){
-                  warnings += '<br/>Warning: COUPON is missing.';
+                  warnings += ' Warning: COUPON is missing.';
             };
             
             
@@ -126,8 +126,8 @@
                 //TODO add checks for all the other item-style params too
                 //TODO BUG this is output too many times
                 if(tagType == "simple"){
-                    warnings += '<br/>Warning: tag has both AMOUNT and ITEM params';
-                    warnings += '<br/>The subtotal will not be calculated for this reason.';
+                    warnings += ' Warning: tag has both AMOUNT and ITEM params';
+                    warnings += ' The subtotal will not be calculated for this reason.';
                     badSubtotal = true;
                 }
                 
@@ -135,7 +135,7 @@
                 itemBadChars = pixelDict["ITEM"+n].match(/[^0-9A-Z\-_]/gi);
 
                 if(itemBadChars != null){
-                    warnings += '<br/>Warning: Illegal characters found in ITEM'+n+': ' + itemBadChars;
+                    warnings += ' Warning: Illegal characters found in ITEM'+n+': ' + itemBadChars;
                 }
                 
                 
@@ -150,7 +150,7 @@
                 qtyBadChars = pixelDict["QTY"+n].match(/[^0-9]/g);
 
                 if(qtyBadChars != null){
-                    warnings += '<br/>Warning: Illegal characters found in QTY'+n+': ' + qtyBadChars;
+                    warnings += ' Warning: Illegal characters found in QTY'+n+': ' + qtyBadChars;
                     badSubtotal = true;
                 }
 	
@@ -159,13 +159,13 @@
 		
                 amtBadChars = pixelDict["AMT"+n].match(/[^0-9\.]/g);
                 if(amtBadChars != null){
-                    warnings += '<br/>Warning: Illegal characters found in AMT'+n+': ' + amtBadChars;
+                    warnings += ' Warning: Illegal characters found in AMT'+n+': ' + amtBadChars;
                     badSubtotal = true;
                 }
                 
                 if( ! $.isNumeric(pixelDict["AMT"+n])) {
                     
-                    warnings += '<br/>Warning: AMT'+n+' is not a numeric value: ' + pixelDict["AMT"+n];
+                    warnings += ' Warning: AMT'+n+' is not a numeric value: ' + pixelDict["AMT"+n];
                     badSubtotal = true;
                 }
                 
@@ -187,20 +187,19 @@
             //show a warning if the subtoal is suspect
             if(badSubtotal === true){
                                 
-                warnings += '<br>Warning: Fields used in the order subtotal generated errors. The subtotal may be incorrect.';
+                warnings += ' Warning: Fields used in the order subtotal generated errors. The subtotal may be incorrect.';
             }
             
-            //close the warnings div
-            warnings += "<br/><br/></div><br/><br/>";
+    
             
-            //TODO update this if you change the warnings section
-            //hide the warnings area if nothing was added
-            if(warnings === "<div class='warnings'><br/><br/></div><br/><br/>"){
-                
-                warnings = "";
-            }
-                      
-                        
+                    
+            
+            $("#output_area").append(subTotal.toFixed(2) + "," + orig_querystring + "," + pixelDict["OID"] + "," + warnings + "<br>" );
+            
+            
+            
+            
+              /*          
                 //TODO check final HTML output for validity, there are a lot of randon DIVs etc
                 $("#output_area").append('<br>' + warnings
                     +'<strong>SUBTOTAL: ' + subTotal + '</strong><br/><br/>'
@@ -209,7 +208,7 @@
                     +'<span class="params">OID</span>: '+ pixelDict["OID"] + '<br/>'
                     + itemList 
                     +'</div></div><img src="blue_line.png">');
-
+                */
                     
                 //only toggle the area if it's hidden already, otherwise it gets hidden 
                 if( $( "#output_area" ).is( ":hidden" ) ) {
@@ -219,14 +218,12 @@
                 }
       
 
-                return;
+                return orig_querystring;
 }
+ 
 
-
-
-
-//var myArray[0]=""; //declaring here because I think there are some scope issues
-
+//todo try it without this
+var myArray = [];
 
 
 //file load stuffs
@@ -246,17 +243,20 @@
                 
                 //todo is this how it was before? I was going to try and make it a global variable 
                 //becuase I think there are scope
-		var myArray = theText.split(/[\n]/);
-                
-                 //clear the div before adding output
+		myArray = theText.split(/[\n]/);
+             
+              //clear the div before adding output
                 $("#output_area").html("");
 		
-                for(i=0;i<myArray.length;i++) {
-
-                    parse_pixel(myArray[i]);
-                    console.log(myArray[i]);
-                }
                 
+                for(var i=0;i<myArray.length;i++) {
+
+                    //the parser pixel function is now returning the original querystring, so you can log it and it will write to the console
+                    //console.log(parse_pixel(myArray[i]));
+                    //console.log(myArray[i]);
+                    parse_pixel(myArray[i]);
+                }
+        
 		
         };
       })(files[0]);
@@ -267,7 +267,6 @@
 
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
   
- 
   
   
   
