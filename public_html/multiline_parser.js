@@ -12,19 +12,26 @@
  * 
  */
 
-
+//todo a lot of the todo's are from the orig pixel parser and need to be cleaned up
+//todo the warnings are probably not working correctly
 
 
 //todo also see this: https://developer.mozilla.org/en-US/docs/Using_files_from_web_applications
 
 
+//array to hold all the data that will go into the file
+var output_array = [ ];
+
 
 //pixel parser function
-	function parse_pixel(orig_querystring){		
+function parse_pixel(orig_querystring){		
 			
         //NOTE that the regex can't have quotes around it
         var querystring = orig_querystring.replace(/&amp;/gi,'&');      
-        	
+        
+        //07-22-2015 remove newlines for a few reasons
+        querystring = querystring.replace(/[\r\n]/gi,'');      
+            
         var subTotal = 0;
         
         //if you set this to true, later will warn user about the subtotal
@@ -36,6 +43,7 @@
        
         var pixelArray = querystring.split("&");
         var pixelDict = new Array();
+              
         
                 
         for(var i = 0; i < pixelArray.length; i++){
@@ -193,10 +201,11 @@
     
             
                     
-            
-            $("#output_area").append(subTotal.toFixed(2) + "," + orig_querystring + "," + pixelDict["OID"] + "," + warnings + "<br>" );
-            
-            
+            //07-22-2015 this was the way to write to the page itself (not usable)
+            //$("#output_area").append(subTotal.toFixed(2) + "," + orig_querystring + "," + pixelDict["OID"] + "," + warnings + "<br>" );
+            //here's the new way -- write to an array
+            var debuginfo_arraysize = output_array.push(pixelDict["OID"] + "," + subTotal.toFixed(2) + "," + querystring + "," + warnings + "\n");
+                        
             
             
               /*          
@@ -218,15 +227,13 @@
                 }
       
 
-                return orig_querystring;
+                return;
 }
  
 
-//todo try it without this
-var myArray = [];
 
-
-//file load stuffs
+//file load stuffs and other main stuffs
+//also contains the stuff to save the file
   function handleFileSelect(evt) {
     var files = evt.target.files; // FileList object
     var reader = new FileReader();
@@ -236,26 +243,50 @@ var myArray = [];
       reader.onload = (function(theFile) {
         
           
-          //todo does this have to return as anon func etc? think that is causing me issues
+          
           return function() {
      
-		var theText = reader.result;
-                
-                //todo is this how it was before? I was going to try and make it a global variable 
-                //becuase I think there are scope
-		myArray = theText.split(/[\n]/);
+            var theText = reader.result;
+            var myArray = theText.split(/[\n]/);
              
-              //clear the div before adding output
-                $("#output_area").html("");
+            //clear the div before adding output
+            //$("#output_area").html("");
 		
-                
-                for(var i=0;i<myArray.length;i++) {
+            for(var i=0;i<myArray.length;i++) {
+                parse_pixel(myArray[i]);
+            }
+        
+        /////////////////////////////////////////////////////
+        /////////// NEW SAVE FILE STUFFS 07-22-2015 /////////
+        
+        //07-22-2015 I am creating a new array to hold all the data that will go in the file
+        //instead of writing the output to the page
+        
+        var textFile = null,
+        makeTextFile = function (text) {
+            var data = new Blob([text], {type: 'text/plain'});
 
-                    //the parser pixel function is now returning the original querystring, so you can log it and it will write to the console
-                    //console.log(parse_pixel(myArray[i]));
-                    //console.log(myArray[i]);
-                    parse_pixel(myArray[i]);
-                }
+            // If we are replacing a previously generated file we need to
+            // manually revoke the object URL to avoid memory leaks.
+            if (textFile !== null) {
+              window.URL.revokeObjectURL(textFile);
+            }
+
+            textFile = window.URL.createObjectURL(data);
+
+            return textFile;
+        };
+
+     
+        var link = document.getElementById('downloadlink');
+        link.href = makeTextFile(output_array);
+        link.style.display = 'block';
+      
+        
+        
+        ///////////////////////////////////////////
+        /////////// END NEW SAVE FILE STUFFS //////
+        
         
 		
         };
@@ -271,4 +302,38 @@ var myArray = [];
   
   
   
+/////////   writing the file  ////////////////////////////////
+/////////from http://stackoverflow.com/questions/21012580/is-it-possible-to-write-data-to-file-using-only-javascript
+///////////and http://jsfiddle.net/UselessCode/qm5AG/
+  
+/*  original sample code:
+
+(function () {
+
+    var textFile = null,
+    makeTextFile = function (text) {
+        var data = new Blob([text], {type: 'text/plain'});
+
+        // If we are replacing a previously generated file we need to
+        // manually revoke the object URL to avoid memory leaks.
+        if (textFile !== null) {
+          window.URL.revokeObjectURL(textFile);
+        }
+
+        textFile = window.URL.createObjectURL(data);
+
+        return textFile;
+  };
+
+
+  var create = document.getElementById('create'),
+    textbox = document.getElementById('textbox');
+
+  create.addEventListener('click', function () {
+    var link = document.getElementById('downloadlink');
+    link.href = makeTextFile(textbox.value);
+    link.style.display = 'block';
+  }, false);
+})();
+*/
   
