@@ -20,8 +20,12 @@
 
 
 //array to hold all the data that will go into the file
-var output_array = [ ];
+//07-28-2015 now this is the old method -- doesn't play well with Blob and CSV :>
+//var output_array = [ ];
 
+//07-28-2015 see notes - string version for Blob comma issues
+var output_string = "";
+var batch_file = "";
 
 //pixel parser function
 function parse_pixel(orig_querystring){		
@@ -203,13 +207,17 @@ function parse_pixel(orig_querystring){
                     
             //07-22-2015 this was the way to write to the page itself (not usable)
             //$("#output_area").append(subTotal.toFixed(2) + "," + orig_querystring + "," + pixelDict["OID"] + "," + warnings + "<br>" );
-            //here's the new way -- write to an array
-            var debuginfo_arraysize = output_array.push(pixelDict["OID"] + "," + subTotal.toFixed(2) + "," + querystring + "," + warnings + "\n");
-                        
+            
+            //array method - removed 07-28-2015
+            //var debuginfo_arraysize = output_array.push(pixelDict["OID"] + "," + subTotal.toFixed(2) + "," + querystring + "," + warnings + "\n");
+            
+            //string method 07-28-2015
+            output_string = output_string + pixelDict["OID"] + "," + subTotal.toFixed(2) + "," + querystring + "," + warnings + "\n";
+             batch_file = batch_file + "XXX";
             
             
               /*          
-                //TODO check final HTML output for validity, there are a lot of randon DIVs etc
+           
                 $("#output_area").append('<br>' + warnings
                     +'<strong>SUBTOTAL: ' + subTotal + '</strong><br/><br/>'
                     +'<span class="params">CID</span>: ' + pixelDict["CID"] + '<br/>' 
@@ -219,13 +227,7 @@ function parse_pixel(orig_querystring){
                     +'</div></div><img src="blue_line.png">');
                 */
                     
-                //only toggle the area if it's hidden already, otherwise it gets hidden 
-                if( $( "#output_area" ).is( ":hidden" ) ) {
-                    
-                    $( "#output_area" ).toggle( "slide","500" );    
-                    
-                }
-      
+          
 
                 return;
 }
@@ -259,28 +261,43 @@ function parse_pixel(orig_querystring){
         /////////////////////////////////////////////////////
         /////////// NEW SAVE FILE STUFFS 07-22-2015 /////////
         
-        //07-22-2015 I am creating a new array to hold all the data that will go in the file
-        //instead of writing the output to the page
-        
+      
         var textFile = null,
         makeTextFile = function (text) {
             var data = new Blob([text], {type: 'text/plain'});
-
+            
+        
+        
+        //From original sample code --- I'm going to comment this out, we aren't doing this
+        /*
             // If we are replacing a previously generated file we need to
             // manually revoke the object URL to avoid memory leaks.
             if (textFile !== null) {
               window.URL.revokeObjectURL(textFile);
             }
-
+        */
+       
             textFile = window.URL.createObjectURL(data);
-
             return textFile;
-        };
-
+            };
+         
+     
+     
      
         var link = document.getElementById('downloadlink');
-        link.href = makeTextFile(output_array);
+        var link2 = document.getElementById('downloadlink2');
+        
+                
+        //old array version   
+        //link.href = makeTextFile(output_array);
+        
+        //string version
+        link.href = makeTextFile(output_string);
+        link2.href = makeTextFile(batch_file);
+        
+        
         link.style.display = 'block';
+        link2.style.display = 'block';
       
         
         

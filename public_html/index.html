@@ -18,15 +18,18 @@
  
     <input type="file" id="files" name="files[]" />
     <output id="list"></output>
-    <p>NOTE: This truncates or rounds the subtotals to two decimal places.</p>
+
+    <p>WORK IN PROGRESS. Check the results and refresh the page before changing files.</p>
+    <p>Tested in Chrome. Load a text file with one query string per line. Huge files may crash your browser - tested with 10,000 lines. </p>
+    <p>This truncates or rounds the subtotals to two decimal places.</p>
     
     <pre> <span id="output_area"></span> </pre>
     
     
-    <a download="output.csv" id="downloadlink" style="display: none">Download file</a>
+    <a download="output.csv" id="downloadlink" style="display: none">Download file with subtotals, OID, and warnings.</a>
+    <a download="output2.csv" id="downloadlink2" style="display: none">Download batch format (work in progress)</a>
 
-    
-    
+      
     
     <script src="multiline_parser.js"></script>
         
