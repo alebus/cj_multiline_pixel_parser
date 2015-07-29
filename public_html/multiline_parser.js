@@ -25,7 +25,7 @@
 
 //07-28-2015 see notes - string version for Blob comma issues
 var output_string = "";
-var batch_file = "";
+var batch_file = "Note: DCNT and other fields are not supported yet\n\nITEMS,ACTION ID,OID\n";
 
 //pixel parser function
 function parse_pixel(orig_querystring){		
@@ -131,7 +131,8 @@ function parse_pixel(orig_querystring){
 			
             itemList = itemList + '<img src="blue_line.png">';
 			
-			
+                       
+            
             for(var n = 1; n < 100 + 1; n++){
 				
             if(pixelDict["ITEM"+n] != undefined){
@@ -221,7 +222,9 @@ function parse_pixel(orig_querystring){
             
             //string method 07-28-2015
             output_string = output_string + pixelDict["OID"] + "," + subTotal.toFixed(2) + "," + querystring + "," + warnings + "\n";
-             batch_file += "\n";
+            
+            batch_file += "," + pixelDict["TYPE"] + "," + pixelDict["OID"];
+            batch_file += "\n";
             
             
               /*          
