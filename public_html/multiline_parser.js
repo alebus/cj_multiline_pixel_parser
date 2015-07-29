@@ -48,7 +48,8 @@ function parse_pixel(orig_querystring){
         var pixelArray = querystring.split("&");
         var pixelDict = new Array();
               
-        
+        //07-28-2015 batch format
+        var batch_items = "";
                 
         for(var i = 0; i < pixelArray.length; i++){
       
@@ -135,6 +136,13 @@ function parse_pixel(orig_querystring){
 				
             if(pixelDict["ITEM"+n] != undefined){
                 
+                
+                //07-28-2015 if this is NOT the first item, add ";;" 
+                if (n!==1) { batch_file += ";;" } 
+                
+                batch_file += pixelDict["ITEM"+n] + ";" + pixelDict["AMT"+n] + ";" + pixelDict["QTY"+n];
+                
+                
                 //TODO add checks for all the other item-style params too
                 //TODO BUG this is output too many times
                 if(tagType == "simple"){
@@ -150,13 +158,13 @@ function parse_pixel(orig_querystring){
                     warnings += ' Warning: Illegal characters found in ITEM'+n+': ' + itemBadChars;
                 }
                 
-                
+               /* old pixelparser stuffs 
                 itemList = itemList + '<br/>'+
                  '<span class="params_head">SKU GROUP NUMBER: '+n +'</span><br/>'+
                  '<span class="params">ITEM'+'</span>: ' + pixelDict["ITEM"+n]+'<br/>'+
                  '<span class="params">AMT'+'</span>: ' + pixelDict["AMT"+n] +'<br/>'+
                  '<span class="params">QTY'+'</span>: ' + pixelDict["QTY"+n] +'<br/>';
-
+                 */
               
                 //match anything that is not a number
                 qtyBadChars = pixelDict["QTY"+n].match(/[^0-9]/g);
@@ -213,7 +221,7 @@ function parse_pixel(orig_querystring){
             
             //string method 07-28-2015
             output_string = output_string + pixelDict["OID"] + "," + subTotal.toFixed(2) + "," + querystring + "," + warnings + "\n";
-             batch_file = batch_file + "XXX";
+             batch_file += "\n";
             
             
               /*          
